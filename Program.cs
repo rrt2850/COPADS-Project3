@@ -7,13 +7,26 @@
 * TODO - rewrite this description when the program is finished and I know what
 * "miscellaneous stuff" I added
 ********************************************************************************************/
+using Messenger.Models;
+using Messenger.Helpers;
+using System.IO;
+using System.Text;
+using System;
+using System.Security.Cryptography;
+using System.Numerics;
 
 class Program{
+    
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     /// <param name="args">The command-line arguments.</param>
     static void Main(string[] args){
+        Tuple<string, string> keys = KeyHelper.GenerateKeys(1024);
+        Console.WriteLine("Public key:");
+        KeyHelper.DeconstructKey(keys.Item1);
+        Console.WriteLine("Private key:");
+        KeyHelper.DeconstructKey(keys.Item2);
 
     }
 }

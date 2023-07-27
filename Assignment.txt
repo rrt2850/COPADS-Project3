@@ -250,7 +250,7 @@ Project 3: Secure Messaging
         (e) Concert the smaller byte arrays to number
         (f) You now know the proper format for a key and can construct your own key.
     3. From Here, you can write genKey, SendKey, getMsg, sendMsg in that order.
-11 Grading Guide
+11  Grading Guide
     Your project is out of 100 points. I will grade your project on the following criteria:
     •   Functionality (80 points)
     –   (20 points) keyGen - Generating compatible private/public keys and storing them
