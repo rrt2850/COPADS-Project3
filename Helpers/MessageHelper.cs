@@ -19,7 +19,7 @@ namespace Messenger.Helpers{
         /// <param name="plainText">The plaintext message to encrypt</param>
         /// <param name="publicKey">The public key to encrypt the message with</param>
         /// <returns>The Base64 ciphertext of the encrypted message</returns>
-        public static string EncryptMessage(string plainText, Key publicKey){
+        public static string EncryptMessage(string plainText, PublicKey publicKey){
             return null;
         }
 
@@ -29,7 +29,7 @@ namespace Messenger.Helpers{
         /// <param name="cipherText">The ciphertext message to decrypt</param>
         /// <param name="privateKey">The private key to decrypt the message with</param>
         /// <returns>The plaintext message</returns>
-        public static string DecryptMessage(string cipherText, Key privateKey){
+        public static string DecryptMessage(string cipherText, PrivateKey privateKey){
             return null;
         }
 

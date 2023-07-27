@@ -8,16 +8,16 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="email">The email address of the user to get the key for</param>
         /// <returns>The public key of the user</returns>
-        public static Key GetKey(string email){
+        public static PublicKey GetKey(string email){
             return null;
         }
 
         /// <summary>
         /// Sends a users public key to the server
         /// </summary>
-        /// <param name="key">The key to send</param>
+        /// <param name="key">The public key to send</param>
         /// <param name="email">The email address of the user to send the key to</param>
-        public static void SendKey(Key key, string email){
+        public static void SendKey(PublicKey key, string email){
             return;
         }
 

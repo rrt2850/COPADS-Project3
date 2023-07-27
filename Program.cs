@@ -22,11 +22,6 @@ class Program{
     /// </summary>
     /// <param name="args">The command-line arguments.</param>
     static void Main(string[] args){
-        Tuple<string, string> keys = KeyHelper.GenerateKeys(1024);
-        Console.WriteLine("Public key:");
-        KeyHelper.DeconstructKey(keys.Item1);
-        Console.WriteLine("Private key:");
-        KeyHelper.DeconstructKey(keys.Item2);
-
+        KeyHelper.GenerateKeys(1024);
     }
 }

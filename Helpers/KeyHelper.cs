@@ -116,25 +116,33 @@ namespace Messenger.Helpers{
         }
 
 
-
         /// <summary>
         /// Generates a RSA public and private key
         /// </summary>
         /// <param name="keySize">The size of the key to generate</param>
         /// <returns>A tuple containing the public and private keys</returns>
-        public static Tuple<string, string> GenerateKeys(int keySize){
+        public static void GenerateKeys(int keySize){
             try
             {
+                // Ensure the key size is positive
                 if(keySize <= 0){
                     throw new ArgumentException("Key size must be positive.", nameof(keySize));
                 }
 
-                Random rand = new Random();                         // Initialize a random number generator
-                PrimeGenerator generator = new PrimeGenerator();    // Initialize a new prime number generator
+                // Initialize a random number generator
+                Random rand = new Random();                         
 
-                double percentOffset = rand.NextDouble() * 0.1 + 0.2;   // Get a random percentage between 0.2 and 0.3
-                int result = rand.Next(2) == 1 ? 1 : -1;                // Get a random sign (1 or -1) so the offset is +- 20-30%
-                percentOffset *= result;                                // Apply the sign to the offset
+                // Initialize a new prime number generator
+                PrimeGenerator generator = new PrimeGenerator();    
+
+                // Get a random percentage between 0.2 and 0.3
+                double percentOffset = rand.NextDouble() * 0.1 + 0.2;   
+
+                // Get a random sign (1 or -1) so the offset is +- 20-30%
+                int result = rand.Next(2) == 1 ? 1 : -1;                
+
+                // Apply the sign to the offset
+                percentOffset *= result;                                
 
                 // Generate p and q (two prime numbers that add up to the key size in bits)
                 int bitLengthP = keySize / 2 + (int)Math.Floor(keySize * percentOffset);
@@ -144,20 +152,38 @@ namespace Messenger.Helpers{
                 BigInteger p = generator.GeneratePrime(bitLengthP);
                 BigInteger q = generator.GeneratePrime(bitLengthQ);
 
-                BigInteger N =  p * q;              // N = p * q
-                BigInteger r = (p - 1) * (q - 1);   // r = (p - 1) * (q - 1)
-                BigInteger D = modInverse(E, r);    // D = modInverse(E, r) Note: D is the private key exponent
+                // N = p * q
+                BigInteger N =  p * q;              
+
+                // r = (p - 1) * (q - 1)
+                BigInteger r = (p - 1) * (q - 1);   
+
+                Console.WriteLine($"p: {p}\nq: {q}\nN: {N}\nr: {r}, E: {E}");
+
+                // D = modInverse(E, r) Note: D is the private key exponent
+                BigInteger D = modInverse(E, r);    
 
                 // E is already set outside of this function
 
                 // Create the public and private keys
-                string publicKey = ConstructKey(E, N);
-                string privateKey = ConstructKey(D, N);
+                string publicKeyString = ConstructKey(E, N);
+                string privateKeyString = ConstructKey(D, N);
 
-                return new Tuple<string, string>(publicKey, privateKey);
+                // Create PublicKey and PrivateKey objects
+                PublicKey publicKey = new PublicKey(key : publicKeyString);
+                PrivateKey privateKey = new PrivateKey(key : privateKeyString);
+
+                // Serialize PublicKeyData and PrivateKeyData objects to JSON
+                string publicKeyJson = JsonSerializer.Serialize(publicKey);
+                string privateKeyJson = JsonSerializer.Serialize(privateKey);
+
+                // Write PublicKeyData and PrivateKeyData JSON to files in the current directory
+                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "public.key"), publicKeyJson);
+                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "private.key"), privateKeyJson);
             }
             catch (Exception ex)
             {
+                // Handle any errors that occurred during key generation
                 Console.Error.WriteLine($"An error occurred in GenerateKeys: {ex.Message}");
                 throw;
             }
@@ -168,7 +194,7 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="filename">The name of the file to load the key from</param>
         /// <returns>The key loaded from the file</returns>
-        public static Key LoadKey(string filename){
+        public static PublicKey LoadKey(string filename){
             return null;
         }
 
@@ -177,7 +203,7 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="filename">The name of the file to save the key to</param>
         /// <param name="key">The key to save</param>
-        public static void SaveKey(string filename, Key key){
+        public static void SaveKey(string filename, PublicKey key){
 
         }
 
@@ -186,16 +212,16 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="key">The key to encode</param>
         /// <returns>The key encoded in Base64</returns>
-        public static string EncodeKey(Key key){
+        public static string EncodeKey(PublicKey key){
             return null;
         }
 
         /// <summary>
-        /// Decodes a Base64 encoded key into a Key object
+        /// Decodes a Base64 encoded key into a PublicKey object
         /// </summary>
         /// <param name="key">The Base64 encoded key</param>
         /// <returns>The decoded key</returns>
-        public static Key DecodeKey(string key){
+        public static PublicKey DecodeKey(string key){
             return null;
         }
 
@@ -225,11 +251,6 @@ namespace Messenger.Helpers{
                 while (a>0) {
                     BigInteger t = i/a, x = a;
                     a = i % x;
-
-                    if(a == 0){
-                        throw new InvalidOperationException("Division by zero error.");
-                    }
-
                     i = x;
                     x = d;
                     d = v - t*x;
