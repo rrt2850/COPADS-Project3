@@ -21,7 +21,10 @@ class Program{
     /// The main entry point for the application.
     /// </summary>
     /// <param name="args">The command-line arguments.</param>
-    static void Main(string[] args){
-        KeyHelper.GenerateKeys(1024);
+    static async Task Main(string[] args){
+        //KeyHelper.GenerateKeys(1024);
+        Console.WriteLine("Keys generated");
+
+        await ServerHelper.SendKey("rrt2850@g.rit.edu");
     }
 }

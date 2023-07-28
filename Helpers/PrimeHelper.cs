@@ -17,6 +17,9 @@ using System;
 using System.Security.Cryptography;
 
 namespace Messenger.Helpers{
+    /// <summary>
+    /// The Extensions class contains extension methods for the BigInteger class
+    /// </summary>
     public static class Extensions{
         /// <summary>
         /// Checks if a BigInteger is probably prime
@@ -90,6 +93,9 @@ namespace Messenger.Helpers{
 
     }
 
+    /// <summary>
+    /// The PrimeGenerator class is used to generate prime numbers
+    /// </summary>
     public class PrimeGenerator{
         //  Initialize a new RandomNumberGenerator
         private RandomNumberGenerator rng = RandomNumberGenerator.Create();

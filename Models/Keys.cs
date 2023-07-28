@@ -7,6 +7,9 @@
 *********************************************************************************************/
 
 namespace Messenger.Models{
+    /// <summary>
+    /// The PrivateKey class is used to store the private key of the user
+    /// </summary>
     public class PrivateKey{
         public List<string> email {get; set;}   // Email addresses of valid recievers
         public string key {get; set;}           // Base64 encoded private key  
@@ -51,6 +54,9 @@ namespace Messenger.Models{
         }
     }
 
+    /// <summary>
+    /// The PublicKey class is used to store the public key of the user
+    /// </summary>
     public class PublicKey{
         public string email {get; set;}         // Email address of the user
         public string key {get; set;}           // Base64 encoded public key

@@ -158,8 +158,6 @@ namespace Messenger.Helpers{
                 // r = (p - 1) * (q - 1)
                 BigInteger r = (p - 1) * (q - 1);   
 
-                Console.WriteLine($"p: {p}\nq: {q}\nN: {N}\nr: {r}, E: {E}");
-
                 // D = modInverse(E, r) Note: D is the private key exponent
                 BigInteger D = modInverse(E, r);    
 
@@ -173,13 +171,9 @@ namespace Messenger.Helpers{
                 PublicKey publicKey = new PublicKey(key : publicKeyString);
                 PrivateKey privateKey = new PrivateKey(key : privateKeyString);
 
-                // Serialize PublicKeyData and PrivateKeyData objects to JSON
-                string publicKeyJson = JsonSerializer.Serialize(publicKey);
-                string privateKeyJson = JsonSerializer.Serialize(privateKey);
-
-                // Write PublicKeyData and PrivateKeyData JSON to files in the current directory
-                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "public.key"), publicKeyJson);
-                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "private.key"), privateKeyJson);
+                // Save the keys to the disk
+                Save<PublicKey>("public.key", publicKey);
+                Save<PrivateKey>("private.key", privateKey);
             }
             catch (Exception ex)
             {
@@ -193,37 +187,45 @@ namespace Messenger.Helpers{
         /// Loads a key from the disk
         /// </summary>
         /// <param name="filename">The name of the file to load the key from</param>
-        /// <returns>The key loaded from the file</returns>
-        public static PublicKey LoadKey(string filename){
-            return null;
+        /// <returns>The key</returns>
+        public static T Load<T>(string filename) where T : class
+        {
+            try{
+                string keyJson = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), filename));
+                T? key = JsonSerializer.Deserialize<T>(keyJson);
+                if (key == null) {
+                    throw new Exception($"Failed to deserialize {typeof(T).Name}.");
+                }
+                return key;
+            }
+            catch (IOException e){
+                throw new FileNotFoundException($"Failed to load {typeof(T).Name} file: {filename}", e);
+            }
+            catch (JsonException e){
+                throw new InvalidDataException($"Failed to deserialize {typeof(T).Name} from file: {filename}", e);
+            }
         }
+
 
         /// <summary>
         /// Saves a key to the disk
         /// </summary>
         /// <param name="filename">The name of the file to save the key to</param>
         /// <param name="key">The key to save</param>
-        public static void SaveKey(string filename, PublicKey key){
-
+        public static void Save<T>(string filename, T key) where T : class
+        {
+            try{
+                string keyJson = JsonSerializer.Serialize(key);
+                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), filename), keyJson);
+            }
+            catch (JsonException e){
+                throw new Exception($"Failed to serialize the key: {key}", e);
+            }
+            catch (IOException e){
+                throw new Exception($"Failed to write key to file: {filename}", e);
+            }
         }
 
-        /// <summary>
-        /// Converts the key into Base64 encoding
-        /// </summary>
-        /// <param name="key">The key to encode</param>
-        /// <returns>The key encoded in Base64</returns>
-        public static string EncodeKey(PublicKey key){
-            return null;
-        }
-
-        /// <summary>
-        /// Decodes a Base64 encoded key into a PublicKey object
-        /// </summary>
-        /// <param name="key">The Base64 encoded key</param>
-        /// <returns>The decoded key</returns>
-        public static PublicKey DecodeKey(string key){
-            return null;
-        }
 
         /// <summary>
         /// Converts a key into a byte array
