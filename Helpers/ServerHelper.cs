@@ -14,9 +14,39 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="email">The email address of the user to get the key for</param>
         /// <returns>The public key of the user</returns>
-        public static PublicKey GetKey(string email){
-            return null;
+        public static async Task<string> GetKey(string email){
+            try{
+                HttpResponseMessage response = await client.GetAsync(baseAddress + $"Key/{email}"); // Get the key from the server
+
+                if (response.IsSuccessStatusCode){
+                    // Handle successful response (2xx)
+                    
+                    string result = await response.Content.ReadAsStringAsync();         // Read the response message as a string
+                    PublicKey? key = JsonSerializer.Deserialize<PublicKey>(result);     // Deserialize the key from JSON
+
+                    // Check if the key was successfully deserialized
+                    if (key == null){
+                        throw new Exception("Failed to deserialize public key.");
+                    }
+
+                    // Save the public key to a file
+                    string filename = email + ".key";
+                    KeyHelper.Save<PublicKey>(filename, key);
+
+                    return "Successfully retrieved and saved key.";
+                }
+                else{
+                    // Handle non-successful response (4xx and 5xx)
+                    return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
+                }
+            }
+            catch (Exception ex){
+                // Handle exceptions that occur uring the request
+                Console.WriteLine($"Error getting key: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
         }
+
 
         /// <summary>
         /// Sends a user's public key to the server and sets the email address as a valid receiver.

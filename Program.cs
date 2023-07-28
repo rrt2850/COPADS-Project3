@@ -23,8 +23,9 @@ class Program{
     /// <param name="args">The command-line arguments.</param>
     static async Task Main(string[] args){
         //KeyHelper.GenerateKeys(1024);
-        Console.WriteLine("Keys generated");
+        //Console.WriteLine("Keys generated");
 
-        await ServerHelper.SendKey("rrt2850@g.rit.edu");
+        //await ServerHelper.SendKey("rrt2850@g.rit.edu");
+        await ServerHelper.GetKey("rrt2850@g.rit.edu");
     }
 }
