@@ -26,6 +26,8 @@ class Program{
         //Console.WriteLine("Keys generated");
 
         //await ServerHelper.SendKey("rrt2850@g.rit.edu");
-        await ServerHelper.GetKey("rrt2850@g.rit.edu");
+        //await ServerHelper.GetKey("rrt2850@g.rit.edu");
+        //await ServerHelper.SendMessage("rrt2850@g.rit.edu", "lets goooooo");
+        await ServerHelper.GetMessage("rrt2850@g.rit.edu");
     }
 }

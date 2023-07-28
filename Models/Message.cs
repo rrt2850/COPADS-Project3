@@ -9,17 +9,17 @@
 
 namespace Messenger.Models{
     public class Message{
-        public string Email {get; set;}         // Email address of the sender of the message
-        public string CipherText {get; set;}    // Base64 encoded ciphertext of the message
+        public string email {get; set;}         // Email address of the sender of the message
+        public string content {get; set;}    // Base64 encoded ciphertext of the message
 
         /// <summary>
         /// Constructor for the Message class
         /// </summary>
         /// <param name="email">The email address of the sender of the message</param>
-        /// <param name="cipherText">A base64 encoded ciphertext of the message</param>
-        public Message(string email, string cipherText){
-            Email = email;
-            CipherText = cipherText;
+        /// <param name="content">A base64 encoded ciphertext of the message</param>
+        public Message(string email, string content){
+            this.email = email;
+            this.content = content;
         }
     }
 }

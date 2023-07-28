@@ -61,12 +61,12 @@ namespace Messenger.Helpers{
         /// Deconstructs a key into its exponent and n values
         /// </summary>
         /// <param name="key">The key to use</param>
-        /// <note>
-        /// Right now this just prints the values, but later it'll return them as a tuple.
-        /// I'm not using a tuple right now because I'm only using this function for testing
-        /// currently.
-        /// </note>
-        public static void DeconstructKey(string key){
+        /// <returns>A tuple containing E and N</returns>
+        /// <remarks>
+        /// The variable E will actually be D (the private key exponent) if the key is a private key
+        /// but the variable is still called E for simplicity
+        /// </remarks>
+        public static Tuple<BigInteger, BigInteger> DeconstructKey(string key){
             try
             {
                 byte[] decodedKey = Convert.FromBase64String(key);
@@ -79,14 +79,12 @@ namespace Messenger.Helpers{
                 }
 
                 int e = BitConverter.ToInt32(eBytes);
-                Console.WriteLine("e: " + e);
 
                 // Get E using 'e' as the number of bytes to read
                 byte[] EBytes = new byte[e];
                 Array.Copy(decodedKey, 4, EBytes, 0, e);
 
                 BigInteger E = new BigInteger(EBytes);
-                Console.WriteLine("E: " + E);
 
                 // get n skipping the first 4 + e bytes and reading the next 4 bytes
                 byte[] nBytes = new byte[4];
@@ -97,15 +95,12 @@ namespace Messenger.Helpers{
                 }
                 int n = BitConverter.ToInt32(nBytes);
 
-                
-                Console.WriteLine("n: " + n);
-
                 // get N skipping the first 4 + e + 4 bytes and reading the next n bytes
                 byte[] NBytes = new byte[n];
                 Array.Copy(decodedKey, 4 + e + 4, NBytes, 0, n);    // Note, I could have just said e + 8 but it clouds up how the bytes are partitioned
                 BigInteger N = new BigInteger(NBytes);
 
-                Console.WriteLine("N: " + N);
+                return new Tuple<BigInteger, BigInteger>(E, N);
             }
             catch (Exception ex)
             {
