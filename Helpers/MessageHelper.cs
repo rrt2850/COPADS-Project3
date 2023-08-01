@@ -106,23 +106,5 @@ namespace Messenger.Helpers{
                 return null;
             }
         }
-
-        /// <summary>
-        /// Loads a message from the disk
-        /// </summary>
-        /// <param name="filename">The name of the file to load the message from</param>
-        /// <returns>The message loaded from the file</returns>
-        public static Message LoadMessage(string filename){
-            return null;
-        }
-
-        /// <summary>
-        /// Saves a message to the disk
-        /// </summary>
-        /// <param name="filename">The name of the file to save the message to</param>
-        /// <param name="message">The message to save</param>
-        public static void SaveMessage(string filename, Message message){
-            return;
-        }
     }
 }

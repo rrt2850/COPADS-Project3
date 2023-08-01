@@ -221,16 +221,6 @@ namespace Messenger.Helpers{
             }
         }
 
-
-        /// <summary>
-        /// Converts a key into a byte array
-        /// </summary>
-        /// <param name="key">The key to convert</param>
-        /// <returns>The key as a byte array</returns>
-        public static byte[] ToByteArray(string key){
-            return null;
-        }
-
         /// <summary>
         /// A modInverse function given to us in the rubric
         /// </summary>

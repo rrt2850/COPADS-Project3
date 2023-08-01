@@ -1,4 +1,12 @@
 // Robert Tetreault (rrt2850@g.rit.edu)
+
+/********************************************************************************************
+* File: ServerHelper.cs
+* -------------------------------------------------------------------------------------------
+* All of the functions related to the server are contained in this file. This includes
+* getting and sending keys and messages to the server.
+*********************************************************************************************/
+
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -33,7 +41,7 @@ namespace Messenger.Helpers{
                     string filename = email + ".key";
                     KeyHelper.Save<PublicKey>(filename, key);
 
-                    return key.key;
+                    return "";
                 }
                 else{
                     // Handle non-successful response (4xx and 5xx)
@@ -42,7 +50,6 @@ namespace Messenger.Helpers{
             }
             catch (Exception ex){
                 // Handle exceptions that occur uring the request
-                Console.WriteLine($"Error getting key: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -56,7 +63,16 @@ namespace Messenger.Helpers{
         public static async Task<string> SendKey(string email)
         {
             try{
-                PublicKey key = KeyHelper.Load<PublicKey>("public.key");    // Load the public key from the disk
+                PublicKey key = KeyHelper.Load<PublicKey>("public.key");            // Load the public key from the disk
+                PrivateKey privateKey = KeyHelper.Load<PrivateKey>("private.key");  // Load the private key from the disk
+
+                if (key == null){
+                    return "Public key not found.";
+                }
+                if (privateKey == null){
+                    return "Private key not found.";
+                }
+
                 key.email = email;                                          // Set the email address of the public key
                 string json = JsonSerializer.Serialize(key);                // Serialize the public key to JSON
                 StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"); // Format JSON for server
@@ -65,26 +81,23 @@ namespace Messenger.Helpers{
                 if (response.IsSuccessStatusCode){
                     // Handle successful response (2xx)
 
-                    Console.WriteLine($"Key sent to {email}");
                     // Read the response message as a string
                     string result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(result);
+
                     // Add the email address to the private key
-                    PrivateKey privateKey = KeyHelper.Load<PrivateKey>("private.key");  // Load the private key from the disk
+                    
                     privateKey.email.Add(email);                                        // Add the email address to the private key 
                     KeyHelper.Save<PrivateKey>("private.key", privateKey);              // Save the private key to the disk
 
-                    return result;
+                    return "Key saved";
                 }
                 else{
                     // Handle non-successful response (4xx and 5xx)
-                    Console.WriteLine($"Error sending key: {response.StatusCode} - {response.ReasonPhrase}");
                     return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
                 }
             }
             catch (Exception ex){
                 // Handle exceptions that may occur during the request
-                Console.WriteLine($"Error sending key: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -130,15 +143,13 @@ namespace Messenger.Helpers{
                         throw new Exception("Failed to decrypt message.");
                     }
 
-                    Console.WriteLine($"Decoded message: {decodedMessage}");
-                    return $"Decoded message: {decodedMessage}";
+                    return $"{decodedMessage}";
                 }
                 // Handle non-successful response (4xx and 5xx)
                 return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
             }
             catch (Exception ex){
                 // Handle exceptions that may occur during the request
-                Console.WriteLine($"Error getting message: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -154,7 +165,9 @@ namespace Messenger.Helpers{
 
                 // Load the reciever's public key
                 if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), filename))){
-                    return $"Error: No public key found for {email}. Download the key first.";
+                    // Note: The writeup says to tell the user they need to download the key, but I wanted
+                    //       my outputs to match the writeup exactly.
+                    return $"Key does not exist for {email}";
                 }
                 
                 // Since the key exists, load it
@@ -174,25 +187,19 @@ namespace Messenger.Helpers{
                 // Send the encrypted message to the server
                 HttpResponseMessage response = await client.PutAsync(baseAddress + $"Message/{email}", content);
 
-                if (response.IsSuccessStatusCode)
-                {   
-                    Console.WriteLine($"hell yeah");
+                if (response.IsSuccessStatusCode){   
                     // Handle successful response (2xx)
-                    return "Message sent successfully.";
+                    return "Message written";
                 }
-                else
-                {
+                else{
                     // Handle non-successful response (4xx and 5xx)
                     throw new Exception($"Error sending message: {response.StatusCode} - {response.ReasonPhrase}");
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex){
                 // Handle exceptions that may occur during the request
-                Console.WriteLine($"Error sending message: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
-
     }
 }
