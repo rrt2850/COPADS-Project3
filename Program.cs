@@ -3,9 +3,8 @@
 /*******************************************************************************************
 * File: Program.cs
 * -----------------------------------------------------------------------------------------
-* This file contains the main entry point for the application and some miscellaneous stuff
-* TODO - rewrite this description when the program is finished and I know what
-* "miscellaneous stuff" I added
+* This file contains the main entry point for the application and handles the command-line
+* arguments.
 ********************************************************************************************/
 using Messenger.Models;
 using Messenger.Helpers;
