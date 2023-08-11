@@ -13,17 +13,27 @@ using System.Text.Json;
 using Messenger.Models;
 
 namespace Messenger.Helpers{
-    public static class ServerHelper{
-        private static HttpClient client = new HttpClient();
+    public  class ServerHelper{
+        private readonly HttpClient client;
+        private readonly MessageHelper messageHelper;
+        private readonly KeyHelper keyHelper;
+
         private const string baseAddress = "http://kayrun.cs.rit.edu:5000/";
+
+        public ServerHelper() {
+            messageHelper = new MessageHelper();    // initialize a new MessageHelper object
+            keyHelper = new KeyHelper();            // initialize a new KeyHelper object
+            client = new HttpClient();              // initialize a new HttpClient object
+        }
 
         /// <summary>
         /// Gets a users public key from the server
         /// </summary>
         /// <param name="email">The email address of the user to get the key for</param>
         /// <returns>The public key of the user on success</returns>
-        public static async Task<string> GetKey(string email){
+        public async Task<string> GetKey(string email){
             try{
+                KeyHelper keyHelper = new KeyHelper(); // initialize a new KeyHelper object
                 HttpResponseMessage response = await client.GetAsync(baseAddress + $"Key/{email}"); // Get the key from the server
 
                 if (response.IsSuccessStatusCode){
@@ -39,7 +49,7 @@ namespace Messenger.Helpers{
 
                     // Save the public key to a file
                     string filename = email + ".key";
-                    KeyHelper.Save<PublicKey>(filename, key);
+                    keyHelper.Save<PublicKey>(filename, key);
 
                     return "";
                 }
@@ -60,11 +70,11 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="email">The email address of the user to send the key to.</param>
         /// <returns>A task representing the asynchronous operation with the response message or error.</returns>
-        public static async Task<string> SendKey(string email)
-        {
+        public async Task<string> SendKey(string email){
             try{
-                PublicKey key = KeyHelper.Load<PublicKey>("public.key");            // Load the public key from the disk
-                PrivateKey privateKey = KeyHelper.Load<PrivateKey>("private.key");  // Load the private key from the disk
+                KeyHelper keyHelper = new KeyHelper();                              // initialize a new KeyHelper object
+                PublicKey key = keyHelper.Load<PublicKey>("public.key");            // Load the public key from the disk
+                PrivateKey privateKey = keyHelper.Load<PrivateKey>("private.key");  // Load the private key from the disk
 
                 if (key == null){
                     return "Public key not found.";
@@ -87,7 +97,7 @@ namespace Messenger.Helpers{
                     // Add the email address to the private key
                     
                     privateKey.email.Add(email);                                        // Add the email address to the private key 
-                    KeyHelper.Save<PrivateKey>("private.key", privateKey);              // Save the private key to the disk
+                    keyHelper.Save<PrivateKey>("private.key", privateKey);              // Save the private key to the disk
 
                     return "Key saved";
                 }
@@ -106,7 +116,7 @@ namespace Messenger.Helpers{
         /// Gets a users message from the server
         /// </summary>
         /// <param name="email">The email address of the user to get the message for</param>
-        public static async Task<string> GetMessage(string email){
+        public async Task<string> GetMessage(string email){
             try{
                 // Get the message from the server
                 HttpResponseMessage response = await client.GetAsync(baseAddress + $"Message/{email}");
@@ -125,7 +135,7 @@ namespace Messenger.Helpers{
                     
                     // Attempt to load the private key from the disk
                     string filename = "private.key";
-                    PrivateKey? privateKey = KeyHelper.Load<PrivateKey>(filename);
+                    PrivateKey? privateKey = keyHelper.Load<PrivateKey>(filename);
 
                     if (privateKey == null){
                         return "Message can't be decoded, private key not found.";
@@ -137,7 +147,7 @@ namespace Messenger.Helpers{
 
                     // Assuming that the 'Decode' function exists that takes encoded message and private key, 
                     // and returns the decoded message
-                    string? decodedMessage = MessageHelper.DecryptMessage(message.content, privateKey);
+                    string? decodedMessage = messageHelper.DecryptMessage(message.content, privateKey);
                     
                     if (decodedMessage == null){
                         throw new Exception("Failed to decrypt message.");
@@ -159,7 +169,7 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="email">The email address of the user to send the message to</param>    
         /// <param name="plaintext">The message to send</param>
-        public static async Task<string> SendMessage(string email, string plaintext){
+        public async Task<string> SendMessage(string email, string plaintext){
             try{
                 string filename = email + ".key";
 
@@ -171,10 +181,10 @@ namespace Messenger.Helpers{
                 }
                 
                 // Since the key exists, load it
-                PublicKey recieverKey = KeyHelper.Load<PublicKey>(filename);
+                PublicKey recieverKey = keyHelper.Load<PublicKey>(filename);
 
                 // Encrypt the plaintext message with the reciever's public key and base64 encode it
-                string? encryptedMessage = MessageHelper.EncryptMessage(recieverKey, plaintext);
+                string? encryptedMessage = messageHelper.EncryptMessage(recieverKey, plaintext);
                 if (encryptedMessage == null){
                     throw new Exception("Failed to encrypt message.");
                 }

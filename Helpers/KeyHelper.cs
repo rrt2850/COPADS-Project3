@@ -15,8 +15,8 @@ using System.Security.Cryptography;
 using Messenger.Models;
 
 namespace Messenger.Helpers{
-    public static class KeyHelper{
-        private static int E = 65537;  // The public key exponent
+    public class KeyHelper{
+        private const int E = 65537;  // The public key exponent
 
         /// <summary>
         /// Formats a key into a string
@@ -24,7 +24,7 @@ namespace Messenger.Helpers{
         /// <param name="exponent">The exponent of the key</param>
         /// <param name="n">The n value of the key</param>
         /// <returns>The key formatted as a Base64 string</returns>
-        public static string ConstructKey(BigInteger exponent, BigInteger n){
+        public string ConstructKey(BigInteger exponent, BigInteger n){
             try
             {
                 // Convert exponent and n to byte arrays (in little endian)
@@ -66,7 +66,7 @@ namespace Messenger.Helpers{
         /// The variable E will actually be D (the private key exponent) if the key is a private key
         /// but the variable is still called E for simplicity
         /// </remarks>
-        public static Tuple<BigInteger, BigInteger> DeconstructKey(string key){
+        public Tuple<BigInteger, BigInteger> DeconstructKey(string key){
             try
             {
                 byte[] decodedKey = Convert.FromBase64String(key);
@@ -116,7 +116,7 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="keySize">The size of the key to generate</param>
         /// <returns>A tuple containing the public and private keys</returns>
-        public static void GenerateKeys(int keySize){
+        public void GenerateKeys(int keySize){
             try
             {
                 // Ensure the key size is positive
@@ -183,7 +183,7 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="filename">The name of the file to load the key from</param>
         /// <returns>The key</returns>
-        public static T Load<T>(string filename) where T : class
+        public T Load<T>(string filename) where T : class
         {
             try{
                 string keyJson = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), filename));
@@ -207,7 +207,7 @@ namespace Messenger.Helpers{
         /// </summary>
         /// <param name="filename">The name of the file to save the key to</param>
         /// <param name="key">The key to save</param>
-        public static void Save<T>(string filename, T key) where T : class
+        public void Save<T>(string filename, T key) where T : class
         {
             try{
                 string keyJson = JsonSerializer.Serialize(key);
@@ -227,7 +227,7 @@ namespace Messenger.Helpers{
         /// <param name="a">The first number</param>
         /// <param name="n">The second number</param>
         /// <returns>The modInverse of the two numbers</returns>
-        static BigInteger modInverse(BigInteger a, BigInteger n){
+        BigInteger modInverse(BigInteger a, BigInteger n){
             try
             {
                 if(a <= 0 || n <= 0){

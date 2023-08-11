@@ -15,7 +15,15 @@ using System.Text;
 using System.Security.Cryptography;
 
 namespace Messenger.Helpers{
-    public static class MessageHelper{
+    public class MessageHelper{
+        private readonly KeyHelper keyHelper;    // A KeyHelper object to help with encrypting and decrypting messages
+
+        /// <summary>
+        /// Constructor for the MessageHelper class
+        /// </summary> 
+        public MessageHelper(){
+            keyHelper = new KeyHelper();    // Initialize a new KeyHelper object
+        }
 
         /// <summary>
         /// Encrypts a plaintext message using the provided public key
@@ -23,7 +31,7 @@ namespace Messenger.Helpers{
         /// <param name="publicKey">The public key to encrypt the message with</param>
         /// <param name="plainText">The plaintext message to encrypt</param>
         /// <returns>The Base64 ciphertext of the encrypted message</returns>
-        public static string? EncryptMessage(PublicKey publicKey, string plaintext){
+        public string? EncryptMessage(PublicKey publicKey, string plaintext){
             try{
                 // Make sure the public key is not null
                 if (publicKey == null){
@@ -35,7 +43,7 @@ namespace Messenger.Helpers{
 
                 // Get the RSA parameters from the public key
                 // Item1 = E, Item2 = N
-                Tuple<BigInteger, BigInteger> rsaParameters = KeyHelper.DeconstructKey(publicKey.key);    
+                Tuple<BigInteger, BigInteger> rsaParameters = keyHelper.DeconstructKey(publicKey.key);    
 
                 BigInteger E = rsaParameters.Item1; // The public exponent
                 BigInteger N = rsaParameters.Item2; // The modulus
@@ -67,7 +75,7 @@ namespace Messenger.Helpers{
         /// <param name="ciphertext">The ciphertext message to decrypt</param>
         /// <param name="privateKey">The private key to decrypt the message with</param>
         /// <returns>The plaintext message</returns>
-        public static string? DecryptMessage(string ciphertext, PrivateKey privateKey){
+        public string? DecryptMessage(string ciphertext, PrivateKey privateKey){
             try{
                 // Make sure the private key is not null
                 if (privateKey == null){
@@ -79,7 +87,7 @@ namespace Messenger.Helpers{
 
                 // Get the RSA parameters from the public key
                 // Item1 = E, Item2 = N
-                Tuple<BigInteger, BigInteger> rsaParameters = KeyHelper.DeconstructKey(privateKey.key);    
+                Tuple<BigInteger, BigInteger> rsaParameters = keyHelper.DeconstructKey(privateKey.key);    
 
                 BigInteger D = rsaParameters.Item1; // The private exponent
                 BigInteger N = rsaParameters.Item2; // The modulus

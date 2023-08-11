@@ -16,16 +16,24 @@ using System.Security.Cryptography;
 using System.Numerics;
 
 class Program{
+    private readonly ServerHelper serverHelper;
+    private readonly KeyHelper keyHelper;
 
-    static bool validOption(string option){
+    public Program(){
+        serverHelper = new ServerHelper();
+        keyHelper = new KeyHelper();
+    }
+
+    bool validOption(string option){
         return option == "keyGen" || option == "getKey" || option == "sendKey" || option == "sendMsg" || option == "getMsg";
     }
 
     /// <summary>
-    /// The main entry point for the application.
+    /// Handles the command-line arguments and calls the appropriate methods.
     /// </summary>
     /// <param name="args">The command-line arguments.</param>
-    static async Task Main(string[] args){
+    public async Task Run(string[] args){
+
         if (args.Length == 0 || !validOption(args[0])){
             Console.WriteLine("Usage: dotnet run <option> <other arguments>");
             Console.WriteLine("Options:");
@@ -47,7 +55,7 @@ class Program{
                 }
 
                 int keySize = Int32.Parse(args[1]);
-                KeyHelper.GenerateKeys(keySize);
+                keyHelper.GenerateKeys(keySize);
                 break;
 
             case "getKey":
@@ -57,7 +65,7 @@ class Program{
                 }
 
                 string email = args[1];
-                string response = await ServerHelper.GetKey(email);
+                string response = await serverHelper.GetKey(email);
                 Console.WriteLine(response);
                 break;
 
@@ -68,7 +76,7 @@ class Program{
                 }
 
                 email = args[1];
-                response = await ServerHelper.SendKey(email);
+                response = await serverHelper.SendKey(email);
                 Console.WriteLine(response);
                 break;
             case "sendMsg":
@@ -79,7 +87,7 @@ class Program{
 
                 email = args[1];
                 string message = args[2];
-                response = await ServerHelper.SendMessage(email, message);
+                response = await serverHelper.SendMessage(email, message);
                 Console.WriteLine(response);
                 break;
             case "getMsg":
@@ -89,9 +97,22 @@ class Program{
                 }
 
                 email = args[1];
-                response = await ServerHelper.GetMessage(email);
+                response = await serverHelper.GetMessage(email);
                 Console.WriteLine(response);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    /// <param name="args">The command-line arguments.</param>
+    static async Task Main(string[] args){
+        try{
+            await new Program().Run(args);
+        }
+        catch (Exception e){
+            Console.WriteLine(e.Message);
         }
     }
 }
