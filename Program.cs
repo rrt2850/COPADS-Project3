@@ -6,13 +6,8 @@
 * This file contains the main entry point for the application and handles the command-line
 * arguments.
 ********************************************************************************************/
-using Messenger.Models;
+
 using Messenger.Helpers;
-using System.IO;
-using System.Text;
-using System;
-using System.Security.Cryptography;
-using System.Numerics;
 
 class Program{
     private readonly ServerHelper serverHelper;

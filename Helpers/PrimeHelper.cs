@@ -10,10 +10,7 @@
 *       this one file to save space since it's not the main point of this project.
 ********************************************************************************************/
 
-
 using System.Numerics;
-using System.Threading.Tasks;
-using System;
 using System.Security.Cryptography;
 
 namespace Messenger.Helpers{

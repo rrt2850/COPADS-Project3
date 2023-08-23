@@ -7,8 +7,6 @@
 * getting and sending keys and messages to the server.
 *********************************************************************************************/
 
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using Messenger.Models;
 
